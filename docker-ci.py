@@ -1,14 +1,37 @@
 #!/usr/bin/env python3
-"""
-Script pour la construction et la publication d'images Docker vers GitLab Container Registry.
-"""
+
 from os import getcwd
 from docker import from_env
 
 from typer import Exit, Typer
 
-
 app = Typer()
+
+@app.command()
+def build(tag = None):
+    """
+    Exécute le build du Dockerfile du répertoire courant
+
+    Args:
+        tag (str): a tag to apply after build.
+
+    Example:
+        To build the project:
+        ```
+        python3 docker-ci.py build --tag myimage
+        ```
+    """
+    
+    client = from_env()
+    generator = client.api.build(
+        path = getcwd(), 
+        tag = tag, 
+        decode = True)
+
+    for chunk in generator:
+        if 'stream' in chunk:
+            for line in chunk['stream'].splitlines():
+                print(line)
 
 @app.command()
 def publish(image, username = None, password = None):
