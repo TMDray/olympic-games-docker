@@ -1,0 +1,9 @@
+app:
+  image: nginx
+  tag: latest
+  imagePullSecret: gitlab-registry-secret
+  port: 8080
+  targetPort: 80
+  replicas: 1
+service:
+  type: LoadBalancer

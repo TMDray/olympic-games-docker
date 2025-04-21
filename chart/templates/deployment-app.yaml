@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app-deployment
+spec:
+  replicas: {{ .Values.app.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-app
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-app
+        image: "{{ .Values.app.image | default "nginx" }}:{{ .Values.app.tag | default "latest" }}"
+        ports:
+        - containerPort: {{ .Values.app.targetPort | default 80 }}
+      imagePullSecrets:
+      - name: {{ .Values.app.imagePullSecret | default "gitlab-registry-secret" }}
