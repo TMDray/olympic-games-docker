@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-nginx-html
+data:
+  index.html: |
+    <html>
+    <body>
+      <h1>Déploiement Olympic Games via Helm Chart</h1>
+      <p>Cette page confirme que vous voyez la nouvelle instance.</p>
+    </body>
+    </html>

@@ -1,24 +1,28 @@
-include:
-  - template: "Workflows/Branch-Pipelines.gitlab-ci.yml"
-
-
 stages:
   - build
+  - publish
 
 default:
-  image: hectorlachambre/oc-expert-devops-docker-python
+  image: node:20.11.0-alpine
   services:
     - docker:26.1.4-dind
-    
   before_script:
-    - cat requirements.txt
-    - pip install --no-cache-dir -r requirements.txt
-    - pip list
+    - npm ci
 
 build_application:
   stage: build
   script:
-    - python3 docker-ci.py build --tag $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
-    - python3 docker-ci.py publish $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
-      --username $CI_REGISTRY_USER
-      --password $CI_REGISTRY_PASSWORD
+    - npm run build --prod
+    - docker build -t $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG .
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+
+publish_application:
+  stage: publish
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""

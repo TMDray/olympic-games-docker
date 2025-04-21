@@ -1,7 +1,7 @@
 app:
-  image: nginx
-  tag: latest
-  imagePullSecret: gitlab-registry-secret
+  image: "registry.gitlab.com/formations7661213/olympic-games-starter/master"
+  tag: "latest"
+  imagePullSecret: "gitlab-registry-secret"
   port: 8080
   targetPort: 80
   replicas: 1

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-app-deployment
 spec:
-  replicas: {{ .Values.app.replicas | default 1 }}
+  replicas: {{ .Values.app.replicas }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-app
@@ -14,8 +14,15 @@ spec:
     spec:
       containers:
       - name: {{ .Release.Name }}-app
-        image: "{{ .Values.app.image | default "nginx" }}:{{ .Values.app.tag | default "latest" }}"
+        image: "{{ .Values.app.image }}:{{ .Values.app.tag }}"
         ports:
-        - containerPort: {{ .Values.app.targetPort | default 80 }}
+        - containerPort: {{ .Values.app.targetPort }}
+        volumeMounts:
+        - name: html-content
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html-content
+        configMap:
+          name: {{ .Release.Name }}-nginx-html
       imagePullSecrets:
-      - name: {{ .Values.app.imagePullSecret | default "gitlab-registry-secret" }}
+      - name: {{ .Values.app.imagePullSecret }}
